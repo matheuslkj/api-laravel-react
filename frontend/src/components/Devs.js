@@ -85,6 +85,15 @@ class Devs extends React.Component {
     .catch((error) => console.error("Error posting developer:", error));
   }
 
+  deletarDev = (id) => {
+    fetch("http://127.0.0.1:8000/api/developers/" +id, { method:'DELETE'})
+    .then(res => { 
+      if(res.ok){
+        this.getDev();
+      }
+    })
+  }
+
   componentWillUnmount() {
     // Cleanup if necessary
   }
@@ -105,8 +114,9 @@ class Devs extends React.Component {
               <td>{developer.nome}</td>
               <td>{developer.nivel.nivel}</td>
               <td>
-                
-                {/* Aqui você pode adicionar opções como editar ou deletar */}
+                <Button variant="danger" onClick={() => this.deletarDev(developer.id)}>
+                    Excluir
+                </Button>
               </td>
             </tr>
           ))}
