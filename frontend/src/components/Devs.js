@@ -1,5 +1,8 @@
 import React from "react";
-import { Table, Form, Button } from "react-bootstrap";
+import { Table, Form, Button, Modal } from "react-bootstrap";
+import { ConfirmDialog } from 'primereact/confirmdialog';
+import { confirmDialog } from 'primereact/confirmdialog';
+import { toast } from "react-toastify";
 
 class Devs extends React.Component {
   constructor(props) {
@@ -16,6 +19,7 @@ class Devs extends React.Component {
       developers: [],
       levels: [],
       isEditing: false,
+      modalOpened: false
     };
   }
 
@@ -94,6 +98,7 @@ class Devs extends React.Component {
       levels_id: developer.levels_id,
       isEditing: true,
     });
+    this.openModal();
   };
 
   clearForm = () => {
@@ -106,6 +111,7 @@ class Devs extends React.Component {
       hobby: "",
       levels_id: "",
       isEditing: false,
+      
     });
   };
 
@@ -123,9 +129,12 @@ class Devs extends React.Component {
       .then((res) => {
         if (res.ok) {
           this.getDev();
+          
         }
       })
+      .then(({res}) => toast.success(res))
       .catch((error) => console.error("Error posting developer:", error));
+      return toast.success('res')
   };
 
   putDev = (developer) => {
@@ -150,6 +159,8 @@ class Devs extends React.Component {
         this.getDev();
       }
     });
+
+    return toast.success('Dev exlcuido com sucesso!')
   };
 
   componentWillUnmount() {
@@ -164,7 +175,7 @@ class Devs extends React.Component {
             <th>ID</th>
             <th>Nome</th>
             <th>Nivel</th>
-            <th>Opções</th>
+            <th className="text-end ">Opções</th>
           </tr>
         </thead>
         <tbody>
@@ -173,20 +184,25 @@ class Devs extends React.Component {
               <td>{developer.id}</td>
               <td>{developer.nome}</td>
               <td>{developer.nivel.nivel}</td>
-              <td>
-                <Button onClick={() => this.fillForm(developer)}>Editar</Button>
+              <td className="text-end ">
+                <Button className="m-1" onClick={() => this.fillForm(developer)}>Editar</Button>
                 <Button
                   variant="danger"
-                  onClick={() => this.deletarDev(developer.id)}
+                  onClick={() => this.deleteUserConfirm(developer.id)}
                 >
                   Excluir
                 </Button>
               </td>
             </tr>
           ))}
+            <ConfirmDialog />
         </tbody>
+
+      
       </Table>
+      
     );
+    
   }
 
   updateField = (field) => (e) => {
@@ -195,8 +211,7 @@ class Devs extends React.Component {
     });
   };
 
-  submit = (e) => {
-    e.preventDefault();
+  submit = () => {
     const developer = {
       nome: this.state.nome,
       sexo: this.state.sexo,
@@ -211,12 +226,45 @@ class Devs extends React.Component {
     } else {
       this.cadDeveloper(developer);
     }
+
+    this.handleClose();
   };
+
+  deleteUserConfirm = (id) => {
+    confirmDialog({
+        message: 'Você tem certeza que deseja excluir esse Dev?',
+        header: 'Atennção',
+        icon: 'pi pi-trash',
+        accept: () => this.deletarDev(id),
+    });
+    
+}
+
+  handleClose = () => {
+    this.setState({
+        modalOpened: false
+    })
+    this.clearForm();
+}
+
+openModal = () => {
+    this.setState({
+        modalOpened: true
+    })
+}
+
 
   render() {
     return (
-      <div>
-        <Form onSubmit={this.submit}>
+      <div className="container">
+
+        <Modal show={this.state.modalOpened} onHide={this.handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Modal heading</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+
+          <Form>
           <Form.Group className="mb-3">
             <Form.Label>ID</Form.Label>
             <Form.Control type="text" value={this.state.id} readOnly={true} />
@@ -296,14 +344,28 @@ class Devs extends React.Component {
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit">
+          
+        </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.handleClose}>
+              Close
+            </Button>
+            <Button variant="primary" type="button" onClick={() => {this.submit()}} >
+              Save Changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Button variant="primary" type="submit" onClick={() => {this.openModal()}}>
             Cadastrar
           </Button>
-        </Form>
+        
         {this.renderTabela()}
       </div>
+      
     );
   }
+  
 }
 
 export default Devs;

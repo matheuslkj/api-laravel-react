@@ -1,5 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'primereact/resources/themes/saga-blue/theme.css';  // ou qualquer outro tema que preferir
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";     
 import {BrowserRouter, Routes, Link, Route} from 'react-router-dom';
 import {Nav} from 'react-bootstrap';
 import Home from './components/Home';
@@ -24,6 +29,7 @@ function App() {
                     <Route path='/niveis' element={<Levels/>}></Route>
                 </Routes>
             </BrowserRouter>
+            <ToastContainer autoClose={3000} />
         </div>
     );
 }
