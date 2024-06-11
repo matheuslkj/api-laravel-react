@@ -1,7 +1,7 @@
 import React from "react";
 import { Table, Form, Button, Modal, Pagination } from "react-bootstrap";
-import { ConfirmDialog } from 'primereact/confirmdialog';
-import { confirmDialog } from 'primereact/confirmdialog';
+import { ConfirmDialog } from "primereact/confirmdialog";
+import { confirmDialog } from "primereact/confirmdialog";
 import { toast } from "react-toastify";
 
 class Devs extends React.Component {
@@ -22,6 +22,7 @@ class Devs extends React.Component {
       modalOpened: false,
       currentPage: 1,
       developersPerPage: 10,
+      searchQuery: "",
     };
   }
 
@@ -99,6 +100,7 @@ class Devs extends React.Component {
       isEditing: true,
     });
     this.openModal();
+    
   };
 
   clearForm = () => {
@@ -128,11 +130,12 @@ class Devs extends React.Component {
       .then((res) => {
         if (res.ok) {
           this.getDev();
+        }else{
+          return toast.error("Erro ao cadastrar o Dev!");
         }
       })
-      .then(({ res }) => toast.success(res))
-      .catch((error) => console.error("Error posting developer:", error));
-    return toast.success('res');
+      
+      return toast.success("Dev cadastrado com sucesso!");
   };
 
   putDev = (developer) => {
@@ -143,10 +146,12 @@ class Devs extends React.Component {
     }).then((res) => {
       if (res.ok) {
         this.getDev();
+        
       } else {
-        alert("ERROR");
+        return toast.error("Erro ao tentar atualizar o Dev!") 
       }
     });
+    
   };
 
   deletarDev = (id) => {
@@ -158,7 +163,7 @@ class Devs extends React.Component {
       }
     });
 
-    return toast.success('Dev excluído com sucesso!');
+    return toast.success("Dev excluído com sucesso!");
   };
 
   componentWillUnmount() {
@@ -169,19 +174,41 @@ class Devs extends React.Component {
     this.setState({ currentPage: number });
   };
 
+  updateSearchQuery = (e) => {
+    this.setState({ searchQuery: e.target.value, currentPage: 1 });
+  };
+
   renderTabela() {
-    const { developers, currentPage, developersPerPage } = this.state;
+    const { developers, currentPage, developersPerPage, searchQuery } =
+      this.state;
+    const filteredDevelopers = developers.filter((developer) =>
+      developer.nome.toLowerCase().includes(searchQuery.toLowerCase())
+    );
     const indexOfLastDev = currentPage * developersPerPage;
     const indexOfFirstDev = indexOfLastDev - developersPerPage;
-    const currentDevelopers = developers.slice(indexOfFirstDev, indexOfLastDev);
+    const currentDevelopers = filteredDevelopers.slice(
+      indexOfFirstDev,
+      indexOfLastDev
+    );
 
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(developers.length / developersPerPage); i++) {
+    for (
+      let i = 1;
+      i <= Math.ceil(filteredDevelopers.length / developersPerPage);
+      i++
+    ) {
       pageNumbers.push(i);
     }
 
     return (
       <>
+        <Form.Control
+          type="text"
+          placeholder="Buscar por nome"
+          value={searchQuery}
+          onChange={this.updateSearchQuery}
+          className="mb-3"
+        />
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -196,9 +223,14 @@ class Devs extends React.Component {
               <tr key={developer.id}>
                 <td>{developer.id}</td>
                 <td>{developer.nome}</td>
-                <td>{developer.level_nivel}</td>
+                <td>{developer.nivel.nivel}</td>
                 <td className="text-end">
-                  <Button className="m-1" onClick={() => this.fillForm(developer)}>Editar</Button>
+                  <Button
+                    className="m-1"
+                    onClick={() => this.fillForm(developer)}
+                  >
+                    Editar
+                  </Button>
                   <Button
                     variant="danger"
                     onClick={() => this.deleteUserConfirm(developer.id)}
@@ -212,8 +244,12 @@ class Devs extends React.Component {
           </tbody>
         </Table>
         <Pagination>
-          {pageNumbers.map(number => (
-            <Pagination.Item key={number} active={number === currentPage} onClick={() => this.handleClick(number)}>
+          {pageNumbers.map((number) => (
+            <Pagination.Item
+              key={number}
+              active={number === currentPage}
+              onClick={() => this.handleClick(number)}
+            >
               {number}
             </Pagination.Item>
           ))}
@@ -240,6 +276,7 @@ class Devs extends React.Component {
 
     if (this.state.isEditing) {
       this.editDeveloper(this.state.id, developer);
+      toast.success("Dev atualizado com sucesso!");
     } else {
       this.cadDeveloper(developer);
     }
@@ -249,25 +286,25 @@ class Devs extends React.Component {
 
   deleteUserConfirm = (id) => {
     confirmDialog({
-      message: 'Você tem certeza que deseja excluir esse Dev?',
-      header: 'Atenção',
-      icon: 'pi pi-trash',
+      message: "Você tem certeza que deseja excluir esse Dev?",
+      header: "Atenção",
+      icon: "pi pi-trash",
       accept: () => this.deletarDev(id),
     });
   };
 
   handleClose = () => {
     this.setState({
-      modalOpened: false
+      modalOpened: false,
     });
     this.clearForm();
-  }
+  };
 
   openModal = () => {
     this.setState({
-      modalOpened: true
+      modalOpened: true,
     });
-  }
+  };
 
   render() {
     return (
@@ -280,7 +317,11 @@ class Devs extends React.Component {
             <Form>
               <Form.Group className="mb-3">
                 <Form.Label>ID</Form.Label>
-                <Form.Control type="text" value={this.state.id} readOnly={true} />
+                <Form.Control
+                  type="text"
+                  value={this.state.id}
+                  readOnly={true}
+                />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Label>Nome:</Form.Label>
@@ -356,12 +397,24 @@ class Devs extends React.Component {
             <Button variant="secondary" onClick={this.handleClose}>
               Close
             </Button>
-            <Button variant="primary" type="button" onClick={() => { this.submit() }}>
+            <Button
+              variant="primary"
+              type="button"
+              onClick={() => {
+                this.submit();
+              }}
+            >
               Save Changes
             </Button>
           </Modal.Footer>
         </Modal>
-        <Button variant="primary" type="submit" onClick={() => { this.openModal() }}>
+        <Button
+          variant="primary"
+          type="submit"
+          onClick={() => {
+            this.openModal();
+          }}
+        >
           Cadastrar
         </Button>
         {this.renderTabela()}
