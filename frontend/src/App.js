@@ -4,12 +4,15 @@ import 'primereact/resources/themes/saga-blue/theme.css';  // ou qualquer outro 
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "react-toastify/dist/ReactToastify.css";
-import { toast, ToastContainer } from "react-toastify";     
+import { ToastContainer } from "react-toastify";     
 import {BrowserRouter, Routes, Link, Route} from 'react-router-dom';
 import {Nav} from 'react-bootstrap';
 import Home from './components/Home';
 import Devs from './components/Devs';
 import Levels from './components/Levels';
+
+
+
 
 function App() {
     // Defina o estado para armazenar os níveis

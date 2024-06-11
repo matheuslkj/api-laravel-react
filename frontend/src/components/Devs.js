@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, Form, Button, Modal } from "react-bootstrap";
+import { Table, Form, Button, Modal, Pagination } from "react-bootstrap";
 import { ConfirmDialog } from 'primereact/confirmdialog';
 import { confirmDialog } from 'primereact/confirmdialog';
 import { toast } from "react-toastify";
@@ -19,7 +19,9 @@ class Devs extends React.Component {
       developers: [],
       levels: [],
       isEditing: false,
-      modalOpened: false
+      modalOpened: false,
+      currentPage: 1,
+      developersPerPage: 10,
     };
   }
 
@@ -31,7 +33,6 @@ class Devs extends React.Component {
     fetch("http://127.0.0.1:8000/api/levels")
       .then((res) => res.json())
       .then((res) => {
-        console.log("Levels response:", res);
         if (res.data) {
           this.setState({ levels: res.data }, () => {
             this.getDev();
@@ -51,7 +52,6 @@ class Devs extends React.Component {
     fetch("http://127.0.0.1:8000/api/developers")
       .then((res) => res.json())
       .then((res) => {
-        console.log("Developers response:", res);
         if (res.data) {
           const developers = res.data.map((developer) => ({
             ...developer,
@@ -111,7 +111,6 @@ class Devs extends React.Component {
       hobby: "",
       levels_id: "",
       isEditing: false,
-      
     });
   };
 
@@ -129,12 +128,11 @@ class Devs extends React.Component {
       .then((res) => {
         if (res.ok) {
           this.getDev();
-          
         }
       })
-      .then(({res}) => toast.success(res))
+      .then(({ res }) => toast.success(res))
       .catch((error) => console.error("Error posting developer:", error));
-      return toast.success('res')
+    return toast.success('res');
   };
 
   putDev = (developer) => {
@@ -160,49 +158,68 @@ class Devs extends React.Component {
       }
     });
 
-    return toast.success('Dev exlcuido com sucesso!')
+    return toast.success('Dev excluído com sucesso!');
   };
 
   componentWillUnmount() {
     // Cleanup if necessary
   }
 
-  renderTabela() {
-    return (
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>Nivel</th>
-            <th className="text-end ">Opções</th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.state.developers.map((developer) => (
-            <tr key={developer.id}>
-              <td>{developer.id}</td>
-              <td>{developer.nome}</td>
-              <td>{developer.nivel.nivel}</td>
-              <td className="text-end ">
-                <Button className="m-1" onClick={() => this.fillForm(developer)}>Editar</Button>
-                <Button
-                  variant="danger"
-                  onClick={() => this.deleteUserConfirm(developer.id)}
-                >
-                  Excluir
-                </Button>
-              </td>
-            </tr>
-          ))}
-            <ConfirmDialog />
-        </tbody>
+  handleClick = (number) => {
+    this.setState({ currentPage: number });
+  };
 
-      
-      </Table>
-      
+  renderTabela() {
+    const { developers, currentPage, developersPerPage } = this.state;
+    const indexOfLastDev = currentPage * developersPerPage;
+    const indexOfFirstDev = indexOfLastDev - developersPerPage;
+    const currentDevelopers = developers.slice(indexOfFirstDev, indexOfLastDev);
+
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(developers.length / developersPerPage); i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Nível</th>
+              <th className="text-end">Opções</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentDevelopers.map((developer) => (
+              <tr key={developer.id}>
+                <td>{developer.id}</td>
+                <td>{developer.nome}</td>
+                <td>{developer.level_nivel}</td>
+                <td className="text-end">
+                  <Button className="m-1" onClick={() => this.fillForm(developer)}>Editar</Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => this.deleteUserConfirm(developer.id)}
+                  >
+                    Excluir
+                  </Button>
+                </td>
+              </tr>
+            ))}
+            <ConfirmDialog />
+          </tbody>
+        </Table>
+        <Pagination>
+          {pageNumbers.map(number => (
+            <Pagination.Item key={number} active={number === currentPage} onClick={() => this.handleClick(number)}>
+              {number}
+            </Pagination.Item>
+          ))}
+        </Pagination>
+      </>
     );
-    
   }
 
   updateField = (field) => (e) => {
@@ -232,140 +249,125 @@ class Devs extends React.Component {
 
   deleteUserConfirm = (id) => {
     confirmDialog({
-        message: 'Você tem certeza que deseja excluir esse Dev?',
-        header: 'Atennção',
-        icon: 'pi pi-trash',
-        accept: () => this.deletarDev(id),
+      message: 'Você tem certeza que deseja excluir esse Dev?',
+      header: 'Atenção',
+      icon: 'pi pi-trash',
+      accept: () => this.deletarDev(id),
     });
-    
-}
+  };
 
   handleClose = () => {
     this.setState({
-        modalOpened: false
-    })
+      modalOpened: false
+    });
     this.clearForm();
-}
+  }
 
-openModal = () => {
+  openModal = () => {
     this.setState({
-        modalOpened: true
-    })
-}
-
+      modalOpened: true
+    });
+  }
 
   render() {
     return (
       <div className="container">
-
         <Modal show={this.state.modalOpened} onHide={this.handleClose}>
           <Modal.Header closeButton>
             <Modal.Title>Modal heading</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-
-          <Form>
-          <Form.Group className="mb-3">
-            <Form.Label>ID</Form.Label>
-            <Form.Control type="text" value={this.state.id} readOnly={true} />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Nome:</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Digite seu nome."
-              required
-              value={this.state.nome}
-              onChange={this.updateField("nome")}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Sexo:</Form.Label>
-            <Form.Select
-              aria-label="Default select example"
-              required
-              value={this.state.sexo}
-              onChange={this.updateField("sexo")}
-            >
-              <option>Selecione o sexo</option>
-              <option value="M">Masculino</option>
-              <option value="F">Feminino</option>
-            </Form.Select>
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Data de Nascimento:</Form.Label>
-            <Form.Control
-              type="date"
-              required
-              value={this.state.data_nascimento}
-              onChange={this.updateField("data_nascimento")}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Idade:</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Digite sua Idade."
-              required
-              value={this.state.idade}
-              onChange={this.updateField("idade")}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Nível</Form.Label>
-            <Form.Select
-              aria-label="Default select example"
-              required
-              value={this.state.levels_id}
-              onChange={this.updateField("levels_id")}
-            >
-              <option value="">Selecione o nível</option>
-              {this.state.levels.map((level) => (
-                <option key={level.id} value={level.id}>
-                  {level.nivel}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Hobby:</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Conte seus Hobbys."
-              required
-              value={this.state.hobby}
-              onChange={this.updateField("hobby")}
-            />
-          </Form.Group>
-
-          
-        </Form>
+            <Form>
+              <Form.Group className="mb-3">
+                <Form.Label>ID</Form.Label>
+                <Form.Control type="text" value={this.state.id} readOnly={true} />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Nome:</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Digite seu nome."
+                  required
+                  value={this.state.nome}
+                  onChange={this.updateField("nome")}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBasicPassword">
+                <Form.Label>Sexo:</Form.Label>
+                <Form.Select
+                  aria-label="Default select example"
+                  required
+                  value={this.state.sexo}
+                  onChange={this.updateField("sexo")}
+                >
+                  <option>Selecione o sexo</option>
+                  <option value="M">Masculino</option>
+                  <option value="F">Feminino</option>
+                </Form.Select>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Data de Nascimento:</Form.Label>
+                <Form.Control
+                  type="date"
+                  required
+                  value={this.state.data_nascimento}
+                  onChange={this.updateField("data_nascimento")}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Idade:</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="Digite sua Idade."
+                  required
+                  value={this.state.idade}
+                  onChange={this.updateField("idade")}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Nível</Form.Label>
+                <Form.Select
+                  aria-label="Default select example"
+                  required
+                  value={this.state.levels_id}
+                  onChange={this.updateField("levels_id")}
+                >
+                  <option value="">Selecione o nível</option>
+                  {this.state.levels.map((level) => (
+                    <option key={level.id} value={level.id}>
+                      {level.nivel}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Hobby:</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Conte seus Hobbys."
+                  required
+                  value={this.state.hobby}
+                  onChange={this.updateField("hobby")}
+                />
+              </Form.Group>
+            </Form>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.handleClose}>
               Close
             </Button>
-            <Button variant="primary" type="button" onClick={() => {this.submit()}} >
+            <Button variant="primary" type="button" onClick={() => { this.submit() }}>
               Save Changes
             </Button>
           </Modal.Footer>
         </Modal>
-        <Button variant="primary" type="submit" onClick={() => {this.openModal()}}>
-            Cadastrar
-          </Button>
-        
+        <Button variant="primary" type="submit" onClick={() => { this.openModal() }}>
+          Cadastrar
+        </Button>
         {this.renderTabela()}
       </div>
-      
     );
   }
-  
 }
 
 export default Devs;
