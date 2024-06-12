@@ -1,8 +1,11 @@
 import React from "react";
 import { Table, Form, Button, Modal, Pagination } from "react-bootstrap";
-import { ConfirmDialog } from "primereact/confirmdialog";
-import { confirmDialog } from "primereact/confirmdialog";
+import { ConfirmDialog } from 'primereact/confirmdialog';
+import { confirmDialog } from 'primereact/confirmdialog';
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+toast.configure();
 
 class Devs extends React.Component {
   constructor(props) {
@@ -23,6 +26,8 @@ class Devs extends React.Component {
       currentPage: 1,
       developersPerPage: 10,
       searchQuery: "",
+      sortField: "nome",
+      sortDirection: "asc",
     };
   }
 
@@ -82,6 +87,7 @@ class Devs extends React.Component {
         if (res.ok) {
           this.clearForm();
           this.getDev();
+          toast.success("Desenvolvedor atualizado com sucesso!");
         }
       })
       .catch((error) => console.error("Error updating developer:", error));
@@ -100,7 +106,6 @@ class Devs extends React.Component {
       isEditing: true,
     });
     this.openModal();
-    
   };
 
   clearForm = () => {
@@ -130,12 +135,10 @@ class Devs extends React.Component {
       .then((res) => {
         if (res.ok) {
           this.getDev();
-        }else{
-          return toast.error("Erro ao cadastrar o Dev!");
+          toast.success("Desenvolvedor cadastrado com sucesso!");
         }
       })
-      
-      return toast.success("Dev cadastrado com sucesso!");
+      .catch((error) => console.error("Error posting developer:", error));
   };
 
   putDev = (developer) => {
@@ -146,12 +149,10 @@ class Devs extends React.Component {
     }).then((res) => {
       if (res.ok) {
         this.getDev();
-        
       } else {
-        return toast.error("Erro ao tentar atualizar o Dev!") 
+        alert("ERROR");
       }
     });
-    
   };
 
   deletarDev = (id) => {
@@ -160,10 +161,9 @@ class Devs extends React.Component {
     }).then((res) => {
       if (res.ok) {
         this.getDev();
+        toast.success("Desenvolvedor deletado com sucesso!");
       }
     });
-
-    return toast.success("Dev excluído com sucesso!");
   };
 
   componentWillUnmount() {
@@ -178,25 +178,40 @@ class Devs extends React.Component {
     this.setState({ searchQuery: e.target.value, currentPage: 1 });
   };
 
+  handleSort = (field) => {
+    const { sortField, sortDirection } = this.state;
+    const newDirection = sortField === field && sortDirection === "asc" ? "desc" : "asc";
+    this.setState({ sortField: field, sortDirection: newDirection });
+  };
+
+  sortDevelopers = (developers) => {
+    const { sortField, sortDirection } = this.state;
+    return developers.sort((a, b) => {
+      const aField = a[sortField];
+      const bField = b[sortField];
+
+      if (aField < bField) {
+        return sortDirection === "asc" ? -1 : 1;
+      }
+      if (aField > bField) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    });
+  };
+
   renderTabela() {
-    const { developers, currentPage, developersPerPage, searchQuery } =
-      this.state;
+    const { developers, currentPage, developersPerPage, searchQuery } = this.state;
     const filteredDevelopers = developers.filter((developer) =>
       developer.nome.toLowerCase().includes(searchQuery.toLowerCase())
     );
+    const sortedDevelopers = this.sortDevelopers(filteredDevelopers);
     const indexOfLastDev = currentPage * developersPerPage;
     const indexOfFirstDev = indexOfLastDev - developersPerPage;
-    const currentDevelopers = filteredDevelopers.slice(
-      indexOfFirstDev,
-      indexOfLastDev
-    );
+    const currentDevelopers = sortedDevelopers.slice(indexOfFirstDev, indexOfLastDev);
 
     const pageNumbers = [];
-    for (
-      let i = 1;
-      i <= Math.ceil(filteredDevelopers.length / developersPerPage);
-      i++
-    ) {
+    for (let i = 1; i <= Math.ceil(filteredDevelopers.length / developersPerPage); i++) {
       pageNumbers.push(i);
     }
 
@@ -213,7 +228,9 @@ class Devs extends React.Component {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Nome</th>
+              <th onClick={() => this.handleSort('nome')} style={{ cursor: 'pointer' }}>
+                Nome {this.state.sortField === 'nome' ? (this.state.sortDirection === 'asc' ? '▲' : '▼') : ''}
+              </th>
               <th>Nível</th>
               <th className="text-end">Opções</th>
             </tr>
@@ -223,14 +240,9 @@ class Devs extends React.Component {
               <tr key={developer.id}>
                 <td>{developer.id}</td>
                 <td>{developer.nome}</td>
-                <td>{developer.nivel.nivel}</td>
+                <td>{developer.level_nivel}</td>
                 <td className="text-end">
-                  <Button
-                    className="m-1"
-                    onClick={() => this.fillForm(developer)}
-                  >
-                    Editar
-                  </Button>
+                  <Button className="m-1" onClick={() => this.fillForm(developer)}>Editar</Button>
                   <Button
                     variant="danger"
                     onClick={() => this.deleteUserConfirm(developer.id)}
@@ -244,12 +256,8 @@ class Devs extends React.Component {
           </tbody>
         </Table>
         <Pagination>
-          {pageNumbers.map((number) => (
-            <Pagination.Item
-              key={number}
-              active={number === currentPage}
-              onClick={() => this.handleClick(number)}
-            >
+          {pageNumbers.map(number => (
+            <Pagination.Item key={number} active={number === currentPage} onClick={() => this.handleClick(number)}>
               {number}
             </Pagination.Item>
           ))}
@@ -276,7 +284,6 @@ class Devs extends React.Component {
 
     if (this.state.isEditing) {
       this.editDeveloper(this.state.id, developer);
-      toast.success("Dev atualizado com sucesso!");
     } else {
       this.cadDeveloper(developer);
     }
@@ -286,25 +293,25 @@ class Devs extends React.Component {
 
   deleteUserConfirm = (id) => {
     confirmDialog({
-      message: "Você tem certeza que deseja excluir esse Dev?",
-      header: "Atenção",
-      icon: "pi pi-trash",
+      message: 'Você tem certeza que deseja excluir esse Dev?',
+      header: 'Atenção',
+      icon: 'pi pi-trash',
       accept: () => this.deletarDev(id),
     });
   };
 
   handleClose = () => {
     this.setState({
-      modalOpened: false,
+      modalOpened: false
     });
     this.clearForm();
-  };
+  }
 
   openModal = () => {
     this.setState({
-      modalOpened: true,
+      modalOpened: true
     });
-  };
+  }
 
   render() {
     return (
@@ -317,11 +324,7 @@ class Devs extends React.Component {
             <Form>
               <Form.Group className="mb-3">
                 <Form.Label>ID</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={this.state.id}
-                  readOnly={true}
-                />
+                <Form.Control type="text" value={this.state.id} readOnly={true} />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Label>Nome:</Form.Label>
@@ -395,26 +398,14 @@ class Devs extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.handleClose}>
-              Close
+              Fechar
             </Button>
-            <Button
-              variant="primary"
-              type="button"
-              onClick={() => {
-                this.submit();
-              }}
-            >
-              Save Changes
+            <Button variant="primary" onClick={this.submit}>
+              Salvar mudanças
             </Button>
           </Modal.Footer>
         </Modal>
-        <Button
-          variant="primary"
-          type="submit"
-          onClick={() => {
-            this.openModal();
-          }}
-        >
+        <Button variant="primary" type="submit" onClick={this.openModal} className="mb-3">
           Cadastrar
         </Button>
         {this.renderTabela()}
