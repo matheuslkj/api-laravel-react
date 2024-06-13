@@ -5,7 +5,6 @@ import { confirmDialog } from 'primereact/confirmdialog';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-toast.configure();
 
 class Devs extends React.Component {
   constructor(props) {
@@ -240,7 +239,7 @@ class Devs extends React.Component {
               <tr key={developer.id}>
                 <td>{developer.id}</td>
                 <td>{developer.nome}</td>
-                <td>{developer.level_nivel}</td>
+                <td>{developer.nivel.nivel}</td>
                 <td className="text-end">
                   <Button className="m-1" onClick={() => this.fillForm(developer)}>Editar</Button>
                   <Button
