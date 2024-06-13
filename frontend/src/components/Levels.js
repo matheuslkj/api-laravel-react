@@ -25,19 +25,40 @@ class Levels extends React.Component {
     this.getDevelopers();
   }
 
-  // Métodos para buscar dados dos níveis e desenvolvedores
   getLevels = () => {
-    // Implementação futura
+    fetch("http://127.0.0.1:8000/api/levels")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.data) {
+          this.setState({ levels: res.data });
+        } else if (Array.isArray(res)) {
+          this.setState({ levels: res });
+        } else {
+          console.error("Unexpected response structure for levels:", res);
+        }
+      })
+      .catch((error) => console.error("Error fetching levels:", error));
   };
 
   getDevelopers = () => {
-    // Implementação futura
+    fetch("http://127.0.0.1:8000/api/developers")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.data) {
+          this.setState({ developers: res.data });
+        } else if (Array.isArray(res)) {
+          this.setState({ developers: res });
+        } else {
+          console.error("Unexpected response structure for developers:", res);
+        }
+      })
+      .catch((error) => console.error("Error fetching developers:", error));
   };
 
   render() {
     return (
       <div>
-        <h1>Levels Component</h1>
+        <h1>Levels</h1>
       </div>
     );
   }
