@@ -1,6 +1,6 @@
 // src/components/Levels.js
 import React from "react";
-import { Table, Pagination } from "react-bootstrap";
+import { Table, Form, Pagination } from "react-bootstrap";
 
 class Levels extends React.Component {
   constructor(props) {
@@ -60,6 +60,20 @@ class Levels extends React.Component {
     return this.state.developers.filter((developer) => developer.levels_id === levelId).length;
   };
 
+  handleSort = (field) => {
+    const { sortField, sortDirection } = this.state;
+    const newDirection = sortField === field && sortDirection === "asc" ? "desc" : "asc";
+    this.setState({ sortField: field, sortDirection: newDirection });
+  };
+
+  handleClick = (number) => {
+    this.setState({ currentPage: number });
+  };
+
+  updateSearchQuery = (e) => {
+    this.setState({ searchQuery: e.target.value, currentPage: 1 });
+  };
+
   renderTabela = () => {
     const { levels, currentPage, levelsPerPage, searchQuery, sortField, sortDirection } = this.state;
     const filteredLevels = levels.filter((level) =>
@@ -89,11 +103,20 @@ class Levels extends React.Component {
 
     return (
       <div>
+        <Form.Control
+          type="text"
+          placeholder="Buscar por nível"
+          value={searchQuery}
+          onChange={this.updateSearchQuery}
+          className="mb-3"
+        />
         <Table striped bordered hover>
           <thead>
             <tr>
               <th>ID</th>
-              <th>Nível</th>
+              <th onClick={() => this.handleSort('nivel')} style={{ cursor: 'pointer' }}>
+                Nível {this.state.sortField === 'nivel' ? (this.state.sortDirection === 'asc' ? '▲' : '▼') : ''}
+              </th>
               <th>Quantidade de Desenvolvedores</th>
             </tr>
           </thead>
