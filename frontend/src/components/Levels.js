@@ -1,6 +1,12 @@
-// src/components/Levels.js
 import React from "react";
-import { Table, Form, Pagination } from "react-bootstrap";
+import { Table, Form, Button, Modal, Pagination } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { confirmDialog } from 'primereact/confirmdialog';
+import { ConfirmDialog } from 'primereact/confirmdialog';
+import "react-toastify/dist/ReactToastify.css";
+import 'primereact/resources/themes/saga-blue/theme.css'; // Tema
+import 'primereact/resources/primereact.min.css'; // CSS principal
+import 'primeicons/primeicons.css'; // Ícones
 
 class Levels extends React.Component {
   constructor(props) {
@@ -31,14 +37,16 @@ class Levels extends React.Component {
       .then((res) => res.json())
       .then((res) => {
         if (res.data) {
+          console.log("Níveis recebidos da API:", res.data);
           this.setState({ levels: res.data });
         } else if (Array.isArray(res)) {
+          console.log("Níveis recebidos da API:", res);
           this.setState({ levels: res });
         } else {
-          console.error("Unexpected response structure for levels:", res);
+          console.error("Estrutura de resposta inesperada para níveis:", res);
         }
       })
-      .catch((error) => console.error("Error fetching levels:", error));
+      .catch((error) => console.error("Erro ao buscar níveis:", error));
   };
 
   getDevelopers = () => {
@@ -46,18 +54,22 @@ class Levels extends React.Component {
       .then((res) => res.json())
       .then((res) => {
         if (res.data) {
+          console.log("Desenvolvedores recebidos da API:", res.data);
           this.setState({ developers: res.data });
         } else if (Array.isArray(res)) {
+          console.log("Desenvolvedores recebidos da API:", res);
           this.setState({ developers: res });
         } else {
-          console.error("Unexpected response structure for developers:", res);
+          console.error("Estrutura de resposta inesperada para desenvolvedores:", res);
         }
       })
-      .catch((error) => console.error("Error fetching developers:", error));
+      .catch((error) => console.error("Erro ao buscar desenvolvedores:", error));
   };
 
   countDevelopersByLevel = (levelId) => {
-    return this.state.developers.filter((developer) => developer.levels_id === levelId).length;
+    const count = this.state.developers.filter((developer) => developer.levels_id === levelId).length;
+    console.log(`Nível com ID: ${levelId} tem ${count} desenvolvedor(es)`);
+    return count;
   };
 
   handleSort = (field) => {
@@ -118,6 +130,7 @@ class Levels extends React.Component {
                 Nível {this.state.sortField === 'nivel' ? (this.state.sortDirection === 'asc' ? '▲' : '▼') : ''}
               </th>
               <th>Quantidade de Desenvolvedores</th>
+              <th className="text-end">Opções</th>
             </tr>
           </thead>
           <tbody>
@@ -126,13 +139,32 @@ class Levels extends React.Component {
                 <td>{level.id}</td>
                 <td>{level.nivel}</td>
                 <td>{this.countDevelopersByLevel(level.id)}</td>
+                <td className="text-end">
+                  <Button
+                    variant="warning"
+                    onClick={() => this.editLevel(level)}
+                    className="me-2"
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => this.deleteLevelConfirm(level.id)}
+                  >
+                    Excluir
+                  </Button>
+                </td>
               </tr>
             ))}
           </tbody>
         </Table>
         <Pagination>
           {pageNumbers.map((number) => (
-            <Pagination.Item key={number} active={number === currentPage} onClick={() => this.handleClick(number)}>
+            <Pagination.Item
+              key={number}
+              active={number === currentPage}
+              onClick={() => this.handleClick(number)}
+            >
               {number}
             </Pagination.Item>
           ))}
@@ -141,10 +173,135 @@ class Levels extends React.Component {
     );
   };
 
+  updateField = (field) => (e) => {
+    this.setState({
+      [field]: e.target.value,
+    });
+  };
+
+  editLevel = (level) => {
+    this.setState({
+      id: level.id,
+      nivel: level.nivel,
+      isEditing: true,
+      modalOpened: true,
+    });
+  };
+
+  clearForm = () => {
+    this.setState({
+      id: 0,
+      nivel: "",
+      isEditing: false,
+    });
+  };
+
+  submit = () => {
+    const { id, nivel, isEditing } = this.state;
+    const method = isEditing ? "PUT" : "POST";
+    const url = isEditing ? `http://127.0.0.1:8000/api/levels/${id}` : "http://127.0.0.1:8000/api/levels";
+    fetch(url, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ nivel }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          this.handleClose();
+          this.getLevels();
+          toast.success("Nível atualizado com sucesso!");
+        } else {
+          console.error("Erro ao atualizar nível:", res);
+          toast.error("Erro ao atualizar nível.");
+        }
+      })
+      .catch((error) => console.error("Erro ao atualizar nível:", error));
+  };
+
+  deleteLevelConfirm = (id) => {
+    console.log(`Solicitação para deletar nível com ID: ${id}`);
+    confirmDialog({
+      message: 'Você tem certeza que deseja excluir este nível?',
+      header: 'Atenção',
+      icon: 'pi pi-trash',
+      accept: () => this.deleteLevel(id),
+    });
+  };
+
+  deleteLevel = (id) => {
+    console.log(`Tentando deletar o nível com ID: ${id}`);
+    fetch(`http://127.0.0.1:8000/api/levels/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (res.ok) {
+          console.log(`Nível com ID: ${id} deletado com sucesso`);
+          this.getLevels();
+          toast.success("Nível deletado com sucesso!");
+        } else {
+          console.error(`Erro ao deletar nível com ID: ${id}. Status: ${res.status}`);
+          toast.error("Erro ao deletar nível.");
+        }
+      })
+      .catch((error) => {
+        console.error(`Erro ao deletar nível com ID: ${id}`, error);
+        toast.error("Erro ao deletar nível.");
+      });
+  };
+
+  handleClose = () => {
+    this.setState({
+      modalOpened: false,
+    });
+    this.clearForm();
+  };
+
+  openModal = () => {
+    this.setState({
+      modalOpened: true,
+    });
+  };
+
   render() {
     return (
-      <div>
-        <h1>Levels Component</h1>
+      <div className="container">
+        <ConfirmDialog />
+        <Modal show={this.state.modalOpened} onHide={this.handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Gerenciar Nível</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group className="mb-3">
+                <Form.Label>ID</Form.Label>
+                <Form.Control type="text" value={this.state.id} readOnly />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Nível</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Digite o nível"
+                  value={this.state.nivel}
+                  onChange={this.updateField("nivel")}
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.handleClose}>
+              Fechar
+            </Button>
+            <Button variant="primary" onClick={this.submit}>
+              Salvar mudanças
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Button variant="primary" onClick={this.openModal}>
+          Adicionar nível
+        </Button>
         {this.renderTabela()}
       </div>
     );
