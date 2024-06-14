@@ -290,21 +290,14 @@ class Devs extends React.Component {
     this.handleClose();
   };
 
-  deleteLevelConfirm = (id) => {
-    console.log(`Solicitação para deletar nível com ID: ${id}`);
-    const associatedDevelopers = this.countDevelopersByLevel(id);
-    if (associatedDevelopers > 0) {
-      toast.error("Não é possível excluir. Existem desenvolvedores associados a este nível.");
-      return;
-    }
+  deleteUserConfirm = (id) => {
     confirmDialog({
-      message: 'Você tem certeza que deseja excluir este nível?',
+      message: 'Você tem certeza que deseja excluir esse Dev?',
       header: 'Atenção',
       icon: 'pi pi-trash',
-      accept: () => this.deleteLevel(id),
+      accept: () => this.deletarDev(id),
     });
   };
-  
 
   handleClose = () => {
     this.setState({
