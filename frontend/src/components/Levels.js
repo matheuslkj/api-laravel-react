@@ -240,15 +240,15 @@ class Levels extends React.Component {
         if (res.ok) {
           console.log(`Nível com ID: ${id} deletado com sucesso`);
           this.getLevels();
-          toast.success("Nível deletado com sucesso!");
+          toast.error("Erro ao deletar nível. Verifique se há desenvolvedores associados.");
         } else {
           console.error(`Erro ao deletar nível com ID: ${id}. Status: ${res.status}`);
-          toast.error("Erro ao deletar nível.");
+          toast.error("Erro ao deletar nível. Verifique se há desenvolvedores associados.");
         }
       })
       .catch((error) => {
         console.error(`Erro ao deletar nível com ID: ${id}`, error);
-        toast.error("Erro ao deletar nível.");
+        toast.error("Erro ao deletar nível. Verifique se há desenvolvedores associados.");
       });
   };
 
