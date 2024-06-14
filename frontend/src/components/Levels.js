@@ -67,7 +67,7 @@ class Levels extends React.Component {
   };
 
   countDevelopersByLevel = (levelId) => {
-    const count = this.state.developers.filter((developer) => developer.levels_id === levelId).length;
+    const count = this.state.developers.filter((developer) => developer.nivel.id === levelId).length;
     console.log(`Nível com ID: ${levelId} tem ${count} desenvolvedor(es)`);
     return count;
   };

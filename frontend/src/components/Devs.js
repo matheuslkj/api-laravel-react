@@ -241,7 +241,7 @@ class Devs extends React.Component {
                 <td>{developer.nome}</td>
                 <td>{developer.nivel.nivel}</td>
                 <td className="text-end">
-                  <Button className="m-1" onClick={() => this.fillForm(developer)}>Editar</Button>
+                  <Button variant="warning" className="m-1" onClick={() => this.fillForm(developer)}>Editar</Button>
                   <Button
                     variant="danger"
                     onClick={() => this.deleteUserConfirm(developer.id)}
