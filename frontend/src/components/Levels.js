@@ -198,28 +198,53 @@ class Levels extends React.Component {
 
   submit = () => {
     const { id, nivel, isEditing } = this.state;
-    const method = isEditing ? "PUT" : "POST";
-    const url = isEditing ? `http://127.0.0.1:8000/api/levels/${id}` : "http://127.0.0.1:8000/api/levels";
-    fetch(url, {
-      method: method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ nivel }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.success) {
-          this.handleClose();
+    const levelData = {
+      nivel: this.state.nivel
+    };
+  
+    if (isEditing) {
+      fetch(`http://127.0.0.1:8000/api/levels/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(levelData)
+      })
+      .then(response => {
+        if (response.ok) {
+          toast.success('Nível atualizado com sucesso!');
           this.getLevels();
-          toast.success("Nível atualizado com sucesso!");
         } else {
-          console.error("Erro ao atualizar nível:", res);
-          toast.error("Erro ao atualizar nível.");
+          response.json().then(err => {
+            toast.error(`Erro ao atualizar nível: ${err.message}`);
+          });
         }
       })
-      .catch((error) => console.error("Erro ao atualizar nível:", error));
-  };
+      .catch(error => {
+        toast.error(`Erro de conexão: ${error.message}`);
+      });
+    } else {
+      fetch("http://127.0.0.1:8000/api/levels", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(levelData)
+      })
+      .then(response => {
+        if (response.ok) {
+          toast.success('Nível cadastrado com sucesso!');
+          this.getLevels();
+        } else {
+          response.json().then(err => {
+            toast.error(`Erro ao cadastrar nível: ${err.message}`);
+          });
+        }
+      })
+      .catch(error => {
+        toast.error(`Erro de conexão: ${error.message}`);
+      });
+    }
+  
+    this.handleClose();
+  }
+  
 
   deleteLevelConfirm = (id) => {
     console.log(`Solicitação para deletar nível com ID: ${id}`);
