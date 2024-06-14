@@ -1,5 +1,6 @@
 // src/components/Levels.js
 import React from "react";
+import { Table, Pagination } from "react-bootstrap";
 
 class Levels extends React.Component {
   constructor(props) {
@@ -55,10 +56,73 @@ class Levels extends React.Component {
       .catch((error) => console.error("Error fetching developers:", error));
   };
 
+  countDevelopersByLevel = (levelId) => {
+    return this.state.developers.filter((developer) => developer.levels_id === levelId).length;
+  };
+
+  renderTabela = () => {
+    const { levels, currentPage, levelsPerPage, searchQuery, sortField, sortDirection } = this.state;
+    const filteredLevels = levels.filter((level) =>
+      level.nivel.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const sortedLevels = filteredLevels.sort((a, b) => {
+      const aField = a[sortField];
+      const bField = b[sortField];
+
+      if (aField < bField) {
+        return sortDirection === "asc" ? -1 : 1;
+      }
+      if (aField > bField) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    });
+
+    const indexOfLastLevel = currentPage * levelsPerPage;
+    const indexOfFirstLevel = indexOfLastLevel - levelsPerPage;
+    const currentLevels = sortedLevels.slice(indexOfFirstLevel, indexOfLastLevel);
+
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(filteredLevels.length / levelsPerPage); i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <div>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nível</th>
+              <th>Quantidade de Desenvolvedores</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentLevels.map((level) => (
+              <tr key={level.id}>
+                <td>{level.id}</td>
+                <td>{level.nivel}</td>
+                <td>{this.countDevelopersByLevel(level.id)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+        <Pagination>
+          {pageNumbers.map((number) => (
+            <Pagination.Item key={number} active={number === currentPage} onClick={() => this.handleClick(number)}>
+              {number}
+            </Pagination.Item>
+          ))}
+        </Pagination>
+      </div>
+    );
+  };
+
   render() {
     return (
       <div>
-        <h1>Levels</h1>
+        <h1>Levels Component</h1>
+        {this.renderTabela()}
       </div>
     );
   }
