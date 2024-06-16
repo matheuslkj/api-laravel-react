@@ -1,0 +1,65 @@
+/* src/styles/global.css */
+
+/* Definição da fonte global */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+  }
+  
+  /* Estilização do cabeçalho */
+  .header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header .title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .header .menu {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .header .menu a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .header .menu a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Estilização do conteúdo principal */
+  .container {
+    padding: 2rem;
+  }
+  
+  /* Estilo para os botões */
+  .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+  
+  .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+  }
+  
+  /* Estilização da tabela */
+  .table {
+    margin-top: 1rem;
+  }
+  
+  .table th,
+  .table td {
+    vertical-align: middle;
+  }

@@ -317,7 +317,7 @@ class Devs extends React.Component {
       <div className="container">
         <Modal show={this.state.modalOpened} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Modal heading</Modal.Title>
+            <Modal.Title>Gerenciar Desenvolvedor</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -325,7 +325,7 @@ class Devs extends React.Component {
                 <Form.Label>ID</Form.Label>
                 <Form.Control type="text" value={this.state.id} readOnly={true} />
               </Form.Group>
-              <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Group className="mb-3">
                 <Form.Label>Nome:</Form.Label>
                 <Form.Control
                   type="text"
@@ -348,7 +348,7 @@ class Devs extends React.Component {
                   <option value="F">Feminino</option>
                 </Form.Select>
               </Form.Group>
-              <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Group className="mb-3">
                 <Form.Label>Data de Nascimento:</Form.Label>
                 <Form.Control
                   type="date"
@@ -357,7 +357,7 @@ class Devs extends React.Component {
                   onChange={this.updateField("data_nascimento")}
                 />
               </Form.Group>
-              <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Group className="mb-3">
                 <Form.Label>Idade:</Form.Label>
                 <Form.Control
                   type="number"
@@ -367,7 +367,7 @@ class Devs extends React.Component {
                   onChange={this.updateField("idade")}
                 />
               </Form.Group>
-              <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Group className="mb-3">
                 <Form.Label>Nível</Form.Label>
                 <Form.Select
                   aria-label="Default select example"
@@ -383,7 +383,7 @@ class Devs extends React.Component {
                   ))}
                 </Form.Select>
               </Form.Group>
-              <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Group className="mb-3">
                 <Form.Label>Hobby:</Form.Label>
                 <Form.Control
                   type="text"
