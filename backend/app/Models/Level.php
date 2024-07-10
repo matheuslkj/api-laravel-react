@@ -12,4 +12,9 @@ class Level extends Model
         'nivel'
     ];
 
+    public function developers()
+    {
+        return $this->hasMany(Developers::class, 'levels_id');
+    }
+
 }
