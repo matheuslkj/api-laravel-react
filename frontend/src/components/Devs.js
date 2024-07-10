@@ -35,7 +35,7 @@ class Devs extends React.Component {
   }
 
   getLevels = () => {
-    fetch("http://127.0.0.1:8000/api/levels")
+    fetch("http://127.0.0.1:8000/api/v1/levels")
       .then((res) => res.json())
       .then((res) => {
         if (res.data) {
@@ -54,7 +54,7 @@ class Devs extends React.Component {
   };
 
   getDev = () => {
-    fetch("http://127.0.0.1:8000/api/developers")
+    fetch("http://127.0.0.1:8000/api/v1/developers")
       .then((res) => res.json())
       .then((res) => {
         if (res.data) {
@@ -77,7 +77,7 @@ class Devs extends React.Component {
   };
 
   editDeveloper = (id, developer) => {
-    fetch(`http://127.0.0.1:8000/api/developers/${id}`, {
+    fetch(`http://127.0.0.1:8000/api/v1/developers/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(developer),
@@ -126,7 +126,7 @@ class Devs extends React.Component {
   };
 
   cadDeveloper = (developer) => {
-    fetch("http://127.0.0.1:8000/api/developers", {
+    fetch("http://127.0.0.1:8000/api/v1/developers", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(developer),
@@ -141,7 +141,7 @@ class Devs extends React.Component {
   };
 
   putDev = (developer) => {
-    fetch("http://127.0.0.1:8000/api/developers/" + developer.id, {
+    fetch("http://127.0.0.1:8000/api/v1/developers/" + developer.id, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(developer),
@@ -155,7 +155,7 @@ class Devs extends React.Component {
   };
 
   deletarDev = (id) => {
-    fetch("http://127.0.0.1:8000/api/developers/" + id, {
+    fetch("http://127.0.0.1:8000/api/v1/developers/" + id, {
       method: "DELETE",
     }).then((res) => {
       if (res.ok) {

@@ -33,7 +33,7 @@ class Levels extends React.Component {
   }
 
   getLevels = () => {
-    fetch("http://127.0.0.1:8000/api/levels")
+    fetch("http://127.0.0.1:8000/api/v1/levels")
       .then((res) => res.json())
       .then((res) => {
         if (res.data) {
@@ -50,7 +50,7 @@ class Levels extends React.Component {
   };
 
   getDevelopers = () => {
-    fetch("http://127.0.0.1:8000/api/developers")
+    fetch("http://127.0.0.1:8000/api/v1/developers")
       .then((res) => res.json())
       .then((res) => {
         if (res.data) {
@@ -203,7 +203,7 @@ class Levels extends React.Component {
     };
   
     if (isEditing) {
-      fetch(`http://127.0.0.1:8000/api/levels/${id}`, {
+      fetch(`http://127.0.0.1:8000/api/v1/levels/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(levelData)
@@ -222,7 +222,7 @@ class Levels extends React.Component {
         toast.error(`Erro de conexão: ${error.message}`);
       });
     } else {
-      fetch("http://127.0.0.1:8000/api/levels", {
+      fetch("http://127.0.0.1:8000/api/v1/levels", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(levelData)
@@ -258,7 +258,7 @@ class Levels extends React.Component {
 
   deleteLevel = (id) => {
     console.log(`Tentando deletar o nível com ID: ${id}`);
-    fetch(`http://127.0.0.1:8000/api/levels/${id}`, {
+    fetch(`http://127.0.0.1:8000/api/v1/levels/${id}`, {
       method: "DELETE",
     })
       .then((res) => {
