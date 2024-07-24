@@ -18,8 +18,6 @@ class LevelFactory extends Factory
     {
         return [
             'nivel' => $this->faker->word,
-            'created_at' => now(),
-            'updated_at' => now(),
         ];
     }
 }

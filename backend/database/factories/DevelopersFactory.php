@@ -20,11 +20,9 @@ class DevelopersFactory extends Factory
             'levels_id' => \App\Models\Level::factory(), 
             'nome' => $this->faker->name,
             'sexo' => $this->faker->randomElement(['M', 'F']),
-            'data_nascimento' => $this->faker->dateTimeBetween('-30 years', '-18 years'),
+            'data_nascimento' => $this->faker->dateTimeBetween('-18 years'),
             'idade' => $this->faker->numberBetween(18, 65),
             'hobby' => $this->faker->word,
-            'created_at' => now(),
-            'updated_at' => now(),
         ];
     }
 }
