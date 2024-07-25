@@ -13,7 +13,6 @@ Este projeto tem como objetivo fornecer uma aplicação web completa com backend
 - **Banco de Dados**: MySQL 5.7
 - **Containerização**: Docker
 - **Gerenciamento de Dependências**: Composer (Laravel), npm/yarn (React)
-- **Documentação da API**: Swagger
 
 **Configuração do Ambiente de Desenvolvimento**
 
