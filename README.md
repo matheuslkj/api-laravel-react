@@ -1,12 +1,12 @@
-**Desafio FullStack Gazin Tech**
+# Desafio FullStack Gazin Tech
 
 Este é um projeto que combina um backend desenvolvido com Laravel e um frontend em React, usando containers Docker para simplificar o processo de desenvolvimento e implantação.
 
-**Visão Geral do Projeto**
+## Visão Geral do Projeto📗
 
 Este projeto tem como objetivo fornecer uma aplicação web completa com backend em Laravel e frontend em React. O Laravel é usado para fornecer uma API RESTful que o React consome para exibir dados e permitir interações do usuário. O Docker é utilizado para facilitar o ambiente de desenvolvimento, garantindo que todos os desenvolvedores e servidores de produção usem a mesma configuração de ambiente.
 
-**Tecnologias Utilizadas**
+## Tecnologias Utilizadas
 
 - **Backend**: Laravel 9.x
 - **Frontend**: React 18.x
@@ -61,7 +61,7 @@ Antes de iniciar o projeto, crie um banco de dados chamado "developers". Isso po
 
 **Executando o Projeto**
 
-**Usando Docker**
+**Usando Docker🐳**
 
 1. Certifique-se de que o Docker está em execução.
 2. **Inicie os containers:**
@@ -150,23 +150,23 @@ Retorna uma lista de desenvolvedores.
    ```json
     [
 
-    `  `{
+        {
 
-    `    `"id": 1,
+            "id": 1,
 
-    `    `"levels_id": 1,
+            "levels_id": 1,
 
-    `    `"nome": "Teste1",
+           "nome": "Teste1",
 
-    `    `"sexo": "F",
+            "sexo": "F",
 
-    `    `"data_nascimento": "1990-01-01",
+            "data_nascimento": "1990-01-01",
 
-    `    `"idade": 34,
+            "idade": 34,
 
-    `    `"hobby": "Coding"
+            "hobby": "Coding"
 
-    `  `}
+        }
 
     ]
    ```
@@ -178,17 +178,17 @@ Cria um novo desenvolvedor.
    ```json
   {
 
-  `  `"levels_id": 1,
+        "levels_id": 1,
 
-  `  `"nome": "Teste2",
+        "nome": "Teste2",
 
-  `  `"sexo": "M",
+        "sexo": "M",
 
-  `  `"data_nascimento": "1995-05-20",
+        "data_nascimento": "1995-05-20",
 
-  `  `"idade": 29,
+        "idade": 29,
 
-  `  `"hobby": "Gaming"
+        "hobby": "Gaming"
 
   }
    ``` 
@@ -199,19 +199,19 @@ Cria um novo desenvolvedor.
    ```json
     {
 
-    `  `"id": 2,
+        "id": 2,
 
-    `  `"levels_id": 1,
+        "levels_id": 1,
 
-    `  `"nome": "Teste2",
+        "nome": "Teste2",
 
-    `  `"sexo": "M",
+        "sexo": "M",
 
-    `  `"data_nascimento": "1995-05-20",
+        "data_nascimento": "1995-05-20",
 
-    `  `"idade": 29,
+        "idade": 29,
 
-    `  `"hobby": "Gaming"
+        "hobby": "Gaming"
 
     }
    ```
@@ -223,17 +223,17 @@ Atualiza um desenvolvedor existente.
  ```json
   {
 
-  `  `"levels_id": 1,
+     "levels_id": 1,
 
-  `  `"nome": "Teste1 Updated",
+     "nome": "Teste1 Updated",
 
-  `  `"sexo": "M",
+     "sexo": "M",
 
-  `  `"data_nascimento": "1995-05-20",
+     "data_nascimento": "1995-05-20",
 
-  `  `"idade": 29,
+     "idade": 29,
 
-  `  `"hobby": "Reading"
+     "hobby": "Reading"
 
   }
  ```
@@ -243,19 +243,19 @@ Atualiza um desenvolvedor existente.
   ```json
     {
 
-    `  `"id": 2,
+        "id": 2,
 
-    `  `"levels_id": 1,
+        "levels_id": 1,
 
-    `  `"nome": "Teste1 Updated",
+        "nome": "Teste1 Updated",
 
-    `  `"sexo": "M",
+        "sexo": "M",
 
-    `  `"data_nascimento": "1995-05-20",
+        "data_nascimento": "1995-05-20",
 
-    `  `"idade": 29,
+        "idade": 29,
 
-    `  `"hobby": "Reading"
+        "hobby": "Reading"
 
     }
   ```
@@ -279,13 +279,13 @@ Retorna uma lista de níveis.
    ```json
     [
 
-    `  `{
+        {
 
-    `    `"id": 1,
+         "id": 1,
 
-    `    `"nivel": "Junior"
+         "nivel": "Junior"
 
-    `  `}
+        }
 
     ]
    ```
@@ -297,7 +297,7 @@ Cria um novo nível.
  ```json
   {
 
-  `  `"nivel": "Senior"
+     "nivel": "Senior"
 
   }
  ``` 
@@ -308,9 +308,9 @@ Cria um novo nível.
    ```json
     {
 
-    `  `"id": 2,
+        "id": 2,
 
-    `  `"nivel": "Senior"
+        "nivel": "Senior"
 
     }
    ```
@@ -322,7 +322,7 @@ Atualiza um nível existente.
  ```json
   {
 
-  `  `"nivel": "Mid-Level"
+     "nivel": "Mid-Level"
 
   }
  ```
@@ -332,9 +332,9 @@ Atualiza um nível existente.
    ```json
     {
 
-    `  `"id": 2,
+        "id": 2,
 
-    `  `"nivel": "Mid-Level"
+        "nivel": "Mid-Level"
 
     }
    ```
@@ -345,3 +345,6 @@ Remove um nível do sistema.
 - **Resposta de Sucesso:**
   - **Status:** 204 No Content
 
+# Abordagem do Projeto
+
+A abordagem adotada para este projeto inclui a separação clara entre frontend e backend, com uma arquitetura de API RESTful. O uso do Docker permite que o ambiente de desenvolvimento seja configurado de maneira consistente em diferentes máquinas.
